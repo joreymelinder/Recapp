@@ -19,8 +19,8 @@ public class Recorder {
     //                                             {recording channels,playback channels}
     private static final int[] CHANNELS = {AudioFormat.CHANNEL_IN_MONO,AudioFormat.CHANNEL_OUT_MONO};
     private static final int ENCODING = AudioFormat.ENCODING_PCM_16BIT;
-    final int BUFFER = 1024; // want to play 2048 (2K) since 2 bytes we use only 1024
-    final int BYTES = 2; // 2 bytes in 16bit format
+    final int BUFFER = 1024;
+    final int BYTES = 2;
     final int[] BUFFERSIZE={AudioTrack.getMinBufferSize(SAMPLERATE,CHANNELS[0],ENCODING),AudioTrack.getMinBufferSize(SAMPLERATE,CHANNELS[1],ENCODING)};
 
     private AudioRecord recorder = new AudioRecord(MediaRecorder.AudioSource.MIC,SAMPLERATE, CHANNELS[0],ENCODING, BUFFER * BYTES);
@@ -42,7 +42,7 @@ public class Recorder {
     }
 
     public void play(){
-        File file = new File("/sdcard/recapp/recording.pcm"); // for ex. path= "/sdcard/samplesound.pcm" or "/sdcard/samplesound.wav"
+        File file = new File("/sdcard/recapp/recording.pcm");
         byte[] byteData = new byte[(int) file.length()];
 
         FileInputStream in;
@@ -51,23 +51,18 @@ public class Recorder {
             in.read( byteData );
             in.close();
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        // Set and push to audio track..
+
         int intSize = android.media.AudioTrack.getMinBufferSize(SAMPLERATE, CHANNELS[1], ENCODING);
 
         AudioTrack at = new AudioTrack(AudioManager.STREAM_MUSIC, SAMPLERATE, CHANNELS[1], ENCODING, intSize, AudioTrack.MODE_STREAM);
-        //at.setVolume(at.getMaxVolume());
-        at.setStereoVolume(2, 2);
+        //TODO figure out how to change the volume.
 
-        if (at!=null) {
-            at.play();
-            // Write the byte array to the track
-            at.write(byteData, 0, byteData.length);
-            at.stop();
-            at.release();
-        }
+        at.play();
+        at.write(byteData, 0, byteData.length);
+        at.stop();
+        at.release();
     }
 
     private void startRecording() {
@@ -99,13 +94,13 @@ public class Recorder {
                     recorder.read(data, 0, data.length);
                     try {
                         os.write(data, 0, BUFFERSIZE[0]);
-                    } catch (IOException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
                 try {
                     os.close();
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -138,7 +133,6 @@ public class Recorder {
     }
 
     private void stopRecording() {
-        // stops the recording activity
         if (null != recorder) {
             isRecording = false;
             recorder.stop();
