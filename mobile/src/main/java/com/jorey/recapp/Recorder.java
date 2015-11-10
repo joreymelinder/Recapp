@@ -13,12 +13,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-/**
- * Created by jorey on 11/3/15.
- */
 public class Recorder {
 
-    private static final int SAMPLERATE = 44100;
+    private static final int SAMPLERATE = 22050;
     //                                             {recording channels,playback channels}
     private static final int[] CHANNELS = {AudioFormat.CHANNEL_IN_MONO,AudioFormat.CHANNEL_OUT_MONO};
     private static final int ENCODING = AudioFormat.ENCODING_PCM_16BIT;
@@ -48,7 +45,7 @@ public class Recorder {
         File file = new File("/sdcard/recapp/recording.pcm"); // for ex. path= "/sdcard/samplesound.pcm" or "/sdcard/samplesound.wav"
         byte[] byteData = new byte[(int) file.length()];
 
-        FileInputStream in = null;
+        FileInputStream in;
         try {
             in = new FileInputStream( file );
             in.read( byteData );
