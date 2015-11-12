@@ -1,5 +1,6 @@
 package com.jorey.recapp;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -8,15 +9,12 @@ import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.Queue;
 
-/**
- * Created by jorey on 11/3/15.
- */
 public class Conversation {
     private Queue<byte[]> data = new LinkedList<>();
     private GregorianCalendar cal=new GregorianCalendar();
     private int startTime,endTime;
     private boolean full=false;
-    private int limit=5000;
+    private int limit=300000;
 
     public Conversation(){
         startTime=currentTime();
@@ -43,10 +41,15 @@ public class Conversation {
         // Write the output audio in byte
 
         FileOutputStream os = null;
-        String filePath=getFilePath();
+        File file=new File(getFilePath());
+        try {
+            file.createNewFile();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
 
         try {
-            os = new FileOutputStream(filePath);
+            os = new FileOutputStream(file);
         } catch (FileNotFoundException e) {
             System.out.println("FILE ERROR");
             e.printStackTrace();
@@ -86,7 +89,8 @@ public class Conversation {
         filePath+=cal.get(GregorianCalendar.YEAR)+"/";
         filePath+=cal.get(GregorianCalendar.MONTH)+"/";
         filePath+=cal.get(GregorianCalendar.DATE)+"/";
+        new File(filePath).mkdirs();
         filePath+=currentTime()+".pcm";
-        return "/sdcard/recapp/recording.pcm";
+        return filePath;
     }
 }

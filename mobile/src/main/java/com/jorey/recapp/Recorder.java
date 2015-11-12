@@ -15,7 +15,7 @@ import java.io.IOException;
 
 public class Recorder {
 
-    private static final int SAMPLERATE = 22050;
+    private static final int SAMPLERATE = 44100;
     //                                             {recording channels,playback channels}
     private static final int[] CHANNELS = {AudioFormat.CHANNEL_IN_MONO,AudioFormat.CHANNEL_OUT_MONO};
     private static final int ENCODING = AudioFormat.ENCODING_PCM_16BIT;
@@ -137,9 +137,10 @@ public class Recorder {
             isRecording = false;
             recorder.stop();
             recorder.release();
-            recorder = null;
+            recorder = new AudioRecord(MediaRecorder.AudioSource.MIC,SAMPLERATE, CHANNELS[0],ENCODING, BUFFER * BYTES);;
             recordingThread = null;
         }
         talk.save(BUFFER*BYTES);
+        start();
     }
 }
