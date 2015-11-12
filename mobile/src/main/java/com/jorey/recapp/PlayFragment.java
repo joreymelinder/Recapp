@@ -3,25 +3,25 @@ package com.jorey.recapp;
 import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.GregorianCalendar;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link PlayFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link PlayFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class PlayFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     public ListView recordingList;
+    public Button playButton;
+    public int selected=-1;
 
     public static PlayFragment newInstance() {
         PlayFragment fragment = new PlayFragment();
@@ -38,22 +38,58 @@ public class PlayFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         //recordingList=(ListView) findViewById(R.id.recording_list);
 
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_play, container, false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
+        View view=inflater.inflate(R.layout.fragment_play, container, false);
+        recordingList=(ListView) view.findViewById(R.id.recording_list);
+        ArrayList<String> recList= new ArrayList<>();
+        File file= new File(getFilePath());
+        File[] list = file.listFiles();
+        for(File f:list){
+            recList.add(f.getName());
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(view.getContext(),android.R.layout.simple_list_item_1, android.R.id.text1,recList);
+        recordingList.setItemsCanFocus(true);
 
+        recordingList.setAdapter(adapter);
+        recordingList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                selected=position;
+            }
+        });
+
+        recordingList.getSelectedItemPosition();
+
+        playButton=(Button) view.findViewById(R.id.play_button);
+
+        playButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new Recorder().play(getFilePath()+recordingList.getItemAtPosition(selected));
+            }
+        });
+        return view;
     }
 
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
         }
+    }
+
+    private String getFilePath(){
+        GregorianCalendar cal= new GregorianCalendar();
+        String filePath = "/sdcard/recapp/";
+        filePath+=cal.get(GregorianCalendar.YEAR)+"/";
+        filePath+=cal.get(GregorianCalendar.MONTH)+"/";
+        filePath+=cal.get(GregorianCalendar.DATE)+"/";
+        return "/sdcard/recapp/2015/10/11/"; //TODO this is a static file. that's bad.
     }
 
     @Override

@@ -65,6 +65,30 @@ public class Recorder {
         at.release();
     }
 
+    public void play(String fileName){
+        File file = new File(fileName);
+        byte[] byteData = new byte[(int) file.length()];
+
+        FileInputStream in;
+        try {
+            in = new FileInputStream( file );
+            in.read( byteData );
+            in.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        int intSize = android.media.AudioTrack.getMinBufferSize(SAMPLERATE, CHANNELS[1], ENCODING);
+
+        AudioTrack at = new AudioTrack(AudioManager.STREAM_MUSIC, SAMPLERATE, CHANNELS[1], ENCODING, intSize, AudioTrack.MODE_STREAM);
+        //TODO figure out how to change the volume.
+
+        at.play();
+        at.write(byteData, 0, byteData.length);
+        at.stop();
+        at.release();
+    }
+
     private void startRecording() {
         recorder.startRecording();
         isRecording = true;

@@ -1,5 +1,6 @@
 package com.jorey.recapp;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -13,7 +14,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends FragmentActivity implements PlayFragment.OnFragmentInteractionListener{
     static final int NUM_ITEMS = 2;
     PlanetFragmentPagerAdapter planetFragmentPagerAdapter;
     ViewPager viewPager;
@@ -25,34 +26,12 @@ public class MainActivity extends FragmentActivity {
         planetFragmentPagerAdapter = new PlanetFragmentPagerAdapter(getSupportFragmentManager());
         viewPager = (ViewPager)findViewById(R.id.pager);
         viewPager.setAdapter(planetFragmentPagerAdapter);
-        Button button = (Button)findViewById(R.id.goto_first);
-        button.setOnClickListener(btnListener);
-        button = (Button)findViewById(R.id.goto_previous);
-        button.setOnClickListener(btnListener);
-        button = (Button)findViewById(R.id.goto_next);
-        button.setOnClickListener(btnListener);
-        button = (Button)findViewById(R.id.goto_next);
-        button.setOnClickListener(btnListener);
     }
 
-    private View.OnClickListener btnListener = new View.OnClickListener() {
-        public void onClick(View v) {
-            switch(v.getId()) {
-                case R.id.goto_first:
-                    viewPager.setCurrentItem(0);
-                    break;
-                case R.id.goto_previous:
-                    viewPager.setCurrentItem(viewPager.getCurrentItem()-1);
-                    break;
-                case R.id.goto_next:
-                    viewPager.setCurrentItem(viewPager.getCurrentItem()+1);
-                    break;
-                case R.id.goto_last:
-                    viewPager.setCurrentItem(NUM_ITEMS - 1);
-                    break;
-            }
-        }
-    };
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
+    }
 
     public static class PlanetFragmentPagerAdapter extends FragmentPagerAdapter {
         public PlanetFragmentPagerAdapter(FragmentManager fm) {
@@ -66,8 +45,8 @@ public class MainActivity extends FragmentActivity {
 
         @Override
         public Fragment getItem(int position) {
-            SwipeFragment fragment = new SwipeFragment();
-            return SwipeFragment.newInstance(position);
+            PlayFragment fragment = new PlayFragment();
+            return fragment;
         }
     }
 
