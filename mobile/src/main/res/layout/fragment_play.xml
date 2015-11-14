@@ -15,7 +15,10 @@
             android:layout_gravity="center_horizontal|top"
             android:choiceMode="singleChoice"
             android:clickable="false"
-            android:listSelector="@color/accent_material_dark" />
+            android:listSelector="@color/accent_material_dark"
+            android:layout_alignParentTop="true"
+            android:layout_alignRight="@+id/button2"
+            android:layout_alignEnd="@+id/button2" />
 
         <SeekBar
             android:layout_width="wrap_content"

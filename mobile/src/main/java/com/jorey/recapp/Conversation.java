@@ -23,8 +23,8 @@ public class Conversation {
 
     //Add a line of sound data.
     public void speak(byte[] sound){
-        System.out.println("TIME: "+currentTime());
-        System.out.println(Arrays.toString(sound)+"\n");
+        //System.out.println("TIME: "+currentTime());
+        //System.out.println(Arrays.toString(sound)+"\n");
         data.add(sound);
         if(!full){
             if(timeElapsed()>limit){
