@@ -16,7 +16,6 @@ import android.widget.ListView;
 public class MobileRecordActivity extends AppCompatActivity {
     private Button saveButton;
     private Button playButton;
-    private ListView fileList;
     private Recorder recorder=new Recorder();
 
     @Override
@@ -27,11 +26,6 @@ public class MobileRecordActivity extends AppCompatActivity {
 
         recorder.start();
 
-        //Recorder.init();
-        //Recorder.start();
-
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         playButton=(Button) findViewById(R.id.play_button);
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -47,7 +41,6 @@ public class MobileRecordActivity extends AppCompatActivity {
                 recorder.stop();
             }
         });
-        setSupportActionBar(toolbar);
     }
 
     @Override

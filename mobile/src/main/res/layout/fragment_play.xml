@@ -4,34 +4,60 @@
 
     <!-- TODO: Update blank fragment layout -->
 
-    <ListView
-        android:layout_width="wrap_content"
-        android:layout_height="400dp"
-        android:id="@+id/recording_list"
-        android:layout_gravity="center_horizontal|top"
-        android:choiceMode="singleChoice" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Play"
-        android:id="@+id/play_button"
-        android:layout_gravity="center_horizontal|bottom" />
+        <ListView
+            android:layout_width="wrap_content"
+            android:layout_height="400dp"
+            android:id="@+id/listView"
+            android:layout_gravity="center_horizontal|top"
+            android:choiceMode="singleChoice"
+            android:clickable="false"
+            android:listSelector="@color/accent_material_dark" />
 
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Next"
-        android:id="@+id/next_button"
-        android:layout_gravity="right|bottom" />
+        <SeekBar
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:id="@+id/seekBar"
+            android:layout_below="@+id/listView"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
 
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="previous"
-        android:id="@+id/prev_button"
-        android:layout_gravity="left|bottom" />
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Play"
+            android:id="@+id/button"
+            android:layout_gravity="center_horizontal|bottom"
+            android:layout_alignTop="@+id/button3"
+            android:layout_centerHorizontal="true" />
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Next"
+            android:id="@+id/button2"
+            android:layout_gravity="right|bottom"
+            android:layout_alignTop="@+id/button"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="previous"
+            android:id="@+id/button3"
+            android:layout_gravity="left|bottom"
+            android:layout_below="@+id/seekBar"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+    </RelativeLayout>
+
 </FrameLayout>

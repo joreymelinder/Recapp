@@ -49,14 +49,17 @@ public class PlayFragment extends Fragment {
         recordingList=(ListView) view.findViewById(R.id.recording_list);
         ArrayList<String> recList= new ArrayList<>();
         File file= new File(getFilePath());
-        File[] list = file.listFiles();
-        for(File f:list){
-            recList.add(f.getName());
+        if(file.listFiles().length>0){
+            File[] list = file.listFiles();
+            for(File f:list){
+                recList.add(f.getName());
+            }
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(view.getContext(),android.R.layout.simple_list_item_1, android.R.id.text1,recList);
+            recordingList.setAdapter(adapter);
         }
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(view.getContext(),android.R.layout.simple_list_item_1, android.R.id.text1,recList);
-        recordingList.setItemsCanFocus(true);
 
-        recordingList.setAdapter(adapter);
+
+        recordingList.setItemsCanFocus(true);
         recordingList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -89,7 +92,7 @@ public class PlayFragment extends Fragment {
         filePath+=cal.get(GregorianCalendar.YEAR)+"/";
         filePath+=cal.get(GregorianCalendar.MONTH)+"/";
         filePath+=cal.get(GregorianCalendar.DATE)+"/";
-        return "/sdcard/recapp/2015/10/11/"; //TODO this is a static file. that's bad.
+        return filePath;
     }
 
     @Override

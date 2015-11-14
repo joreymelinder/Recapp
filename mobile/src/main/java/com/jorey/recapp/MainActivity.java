@@ -7,25 +7,19 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
 
-public class MainActivity extends FragmentActivity implements PlayFragment.OnFragmentInteractionListener{
+public class MainActivity extends FragmentActivity implements RecordFragment.OnFragmentInteractionListener, PlayFragment.OnFragmentInteractionListener{
     static final int NUM_ITEMS = 2;
-    PlanetFragmentPagerAdapter planetFragmentPagerAdapter;
+    RecorderPager recorderPager;
     ViewPager viewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_pager);
-        planetFragmentPagerAdapter = new PlanetFragmentPagerAdapter(getSupportFragmentManager());
+        recorderPager = new RecorderPager(getSupportFragmentManager());
         viewPager = (ViewPager)findViewById(R.id.pager);
-        viewPager.setAdapter(planetFragmentPagerAdapter);
+        viewPager.setAdapter(recorderPager);
     }
 
     @Override
@@ -33,8 +27,8 @@ public class MainActivity extends FragmentActivity implements PlayFragment.OnFra
 
     }
 
-    public static class PlanetFragmentPagerAdapter extends FragmentPagerAdapter {
-        public PlanetFragmentPagerAdapter(FragmentManager fm) {
+    public static class RecorderPager extends FragmentPagerAdapter {
+        public RecorderPager(FragmentManager fm) {
             super(fm);
         }
 
@@ -45,32 +39,12 @@ public class MainActivity extends FragmentActivity implements PlayFragment.OnFra
 
         @Override
         public Fragment getItem(int position) {
-            PlayFragment fragment = new PlayFragment();
-            return fragment;
-        }
-    }
-
-    public static class SwipeFragment extends Fragment {
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
-            View swipeView = inflater.inflate(R.layout.fragment_play, container, false);
-            TextView tv = (TextView)swipeView.findViewById(R.id.text);
-
-            Bundle args = getArguments();
-            int position = args.getInt("position");
-            /*String planet = Planet.PLANETS[position];
-            int imgResId = getResources().getIdentifier(planet, "drawable", "com.javapapers.android.androidswipeableviews.app");
-            img.setImageResource(imgResId);
-            tv.setText(Planet.PLANET_DETAIL.get(planet)+" - Wikipedia.");*/
-            return swipeView;
-        }
-
-        static SwipeFragment newInstance(int position) {
-            SwipeFragment swipeFragment = new SwipeFragment();
-            Bundle args = new Bundle();
-            args.putInt("position", position);
-            swipeFragment.setArguments(args);
-            return swipeFragment;
+            if(position==0){
+                return new RecordFragment();
+            }
+            else{
+                return new PlayFragment();
+            }
         }
     }
 }
