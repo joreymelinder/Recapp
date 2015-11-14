@@ -11,6 +11,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.SeekBar;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -21,7 +22,10 @@ public class PlayFragment extends Fragment {
 
     public ListView recordingList;
     public Button playButton;
+    public SeekBar seekBar;
     public int selected=-1;
+    //public Recorder recorder=new Recorder();
+    public Player player=new Player();
 
     public static PlayFragment newInstance() {
         PlayFragment fragment = new PlayFragment();
@@ -38,9 +42,6 @@ public class PlayFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        //recordingList=(ListView) findViewById(R.id.recording_list);
-
     }
 
     @Override
@@ -69,12 +70,31 @@ public class PlayFragment extends Fragment {
 
         recordingList.getSelectedItemPosition();
 
+        seekBar=(SeekBar) view.findViewById(R.id.seekBar);
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
         playButton=(Button) view.findViewById(R.id.play_button);
 
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new Recorder().play(getFilePath()+recordingList.getItemAtPosition(selected));
+
+                player.playStart(getFilePath()+recordingList.getItemAtPosition(selected));
             }
         });
         return view;
