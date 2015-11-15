@@ -2,12 +2,14 @@ package com.jorey.recapp;
 
 import android.media.AudioFormat;
 import android.media.AudioManager;
-import android.media.AudioRecord;
 import android.media.AudioTrack;
-import android.media.MediaRecorder;
+import android.os.Build;
+import android.widget.SeekBar;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 public class Player{
     private static final int SAMPLERATE = 44100;
@@ -19,6 +21,11 @@ public class Player{
     private Thread playThread = null;
     private boolean isPlaying = false;
     public String playFile;
+    public SeekBar seekBar;
+
+    public Player(SeekBar sb){
+        seekBar=sb;
+    }
 
     public void play(String fileName){
         File file = new File(fileName);
@@ -32,14 +39,33 @@ public class Player{
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        int intSize = android.media.AudioTrack.getMinBufferSize(SAMPLERATE, CHANNELS[1], ENCODING);
+        int intSize = AudioTrack.getMinBufferSize(SAMPLERATE, CHANNELS[1], ENCODING);
 
         AudioTrack at = new AudioTrack(AudioManager.STREAM_MUSIC, SAMPLERATE, CHANNELS[1], ENCODING, intSize, AudioTrack.MODE_STREAM);
-        //TODO figure out how to change the volume.
-
+        //at.setVolume(at.getMaxVolume());
         at.play();
-        at.write(byteData, 0, byteData.length);
+
+        ByteBuffer buff=ByteBuffer.wrap(byteData);
+        System.out.println("BUFFER TOTAL: "+buff.remaining());
+        System.out.println("ARRAY TOTAL: "+byteData.length);
+        int progress=0;
+        while(buff.hasRemaining()){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                float percent=100*((float)buff.position()/(float)byteData.length);
+                if((int)percent>progress){
+                    progress=(int)percent;
+                    seekBar.setProgress(progress);
+                    System.out.println("PROGRESS: %"+percent);
+                }
+
+                //System.out.println("BUFFER POSITION: "+buff.position());
+                at.write(buff,buff.remaining(),AudioTrack.WRITE_NON_BLOCKING);
+            }
+            else{
+                System.out.println("SHIT");
+            }
+        }
+
         at.stop();
         at.release();
     }

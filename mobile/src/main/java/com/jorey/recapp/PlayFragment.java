@@ -25,7 +25,7 @@ public class PlayFragment extends Fragment {
     public SeekBar seekBar;
     public int selected=-1;
     //public Recorder recorder=new Recorder();
-    public Player player=new Player();
+    public Player player;
 
     public static PlayFragment newInstance() {
         PlayFragment fragment = new PlayFragment();
@@ -75,7 +75,7 @@ public class PlayFragment extends Fragment {
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
+                System.out.println("SEEKBAR PROGRESS: "+progress);
             }
 
             @Override
@@ -88,6 +88,7 @@ public class PlayFragment extends Fragment {
 
             }
         });
+        player=new Player(seekBar);
         playButton=(Button) view.findViewById(R.id.play_button);
 
         playButton.setOnClickListener(new View.OnClickListener() {
