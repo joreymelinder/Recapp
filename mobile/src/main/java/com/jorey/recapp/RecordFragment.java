@@ -1,23 +1,21 @@
 package com.jorey.recapp;
 
 import android.app.Activity;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
+import com.criapp.circleprogresscustomview.CircleProgressView;
 
 
 public class RecordFragment extends Fragment {
-    private Button saveButton;
     private Recorder recorder=new Recorder();
+    private CircleProgressView saveButton;
+    private OnRecordInteractionListener listener;
 
-    private OnFragmentInteractionListener mListener;
-
-    public static RecordFragment newInstance(String param1, String param2) {
+    public static RecordFragment newInstance() {
         RecordFragment fragment = new RecordFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
@@ -39,15 +37,34 @@ public class RecordFragment extends Fragment {
         // Inflate the layout for this fragment
         View view =inflater.inflate(R.layout.fragment_record, container, false);
         recorder.start();
+        
+        saveButton = (CircleProgressView) view.findViewById(R.id.vButton);
 
-        saveButton=(Button) view.findViewById(R.id.save_button);
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                recorder.stop();
+                saveButton.simulateProgress(360);
             }
         });
+        saveButton.setmCallback(new CircleProgressView.CircleProgressCallback() {
+            @Override
+            public void onError(int progress1) {
+
+            }
+
+            @Override
+            public void onFinish(int progress1) {
+                saveButton.setProgress(0);
+                recorder.stop();
+                listener.onRecord();
+            }
+
+            @Override
+            public void onProgress(int progress1) {
+
+            }
+        });
+
         return view;
     }
 
@@ -56,7 +73,7 @@ public class RecordFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (OnFragmentInteractionListener) activity;
+            listener = (OnRecordInteractionListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -66,22 +83,10 @@ public class RecordFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
+        listener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
+    public interface OnRecordInteractionListener {
+        public void onRecord();
     }
-
 }

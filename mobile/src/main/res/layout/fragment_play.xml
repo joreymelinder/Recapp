@@ -4,7 +4,9 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:clickable="false"
+        android:theme="@style/Recapp">
 
         <ListView
             android:layout_width="wrap_content"
@@ -13,51 +15,41 @@
             android:layout_gravity="center_horizontal|top"
             android:choiceMode="singleChoice"
             android:clickable="false"
-            android:listSelector="@color/accent_material_dark"
-            android:layout_alignParentTop="true"/>
+            android:listSelector="@color/accent_material_dark_1"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
 
         <SeekBar
             android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:id="@+id/seekBar"
-            android:layout_below="@+id/recording_list"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:layout_above="@+id/play_button" />
+            android:layout_below="@+id/recording_list" />
 
-        <Button
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Play"
+        <ImageButton
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             android:id="@+id/play_button"
-            android:layout_gravity="center_horizontal|bottom"
-            android:layout_alignParentBottom="true"
+            android:src="@drawable/ic_media_play"
+            android:background="@color/background_material_dark"
+            android:scaleType="fitXY"
+            android:layout_below="@+id/seekBar"
             android:layout_centerHorizontal="true" />
 
-        <Button
-            style="?android:attr/buttonStyleSmall"
+        <DatePicker
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="next"
-            android:id="@+id/next_button"
-            android:layout_gravity="right|bottom"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
+            android:id="@+id/datePicker"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_above="@+id/recording_list"
+            android:datePickerMode="spinner"
+            android:calendarViewShown="false"/>
 
-        <Button
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="previous"
-            android:id="@+id/prev_button"
-            android:layout_gravity="left|bottom"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
     </RelativeLayout>
 
 </FrameLayout>

@@ -1,7 +1,6 @@
 package com.jorey.recapp;
 
 import android.app.Activity;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -9,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SeekBar;
 
@@ -18,14 +17,15 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 
 public class PlayFragment extends Fragment {
-    private OnFragmentInteractionListener mListener;
+    private OnPlayInteractionListener listener;
 
     public ListView recordingList;
-    public Button playButton;
+    public ImageButton playButton;
     public SeekBar seekBar;
     public int selected=-1;
-    //public Recorder recorder=new Recorder();
     public Player player;
+    private File file;
+    private View view;
 
     public static PlayFragment newInstance() {
         PlayFragment fragment = new PlayFragment();
@@ -46,36 +46,15 @@ public class PlayFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
-        View view=inflater.inflate(R.layout.fragment_play, container, false);
-        recordingList=(ListView) view.findViewById(R.id.recording_list);
-        ArrayList<String> recList= new ArrayList<>();
-        File file= new File(getFilePath());
-        if(file.listFiles().length>0){
-            File[] list = file.listFiles();
-            for(File f:list){
-                recList.add(f.getName());
-            }
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(view.getContext(),android.R.layout.simple_list_item_1, android.R.id.text1,recList);
-            recordingList.setAdapter(adapter);
-        }
+        view=inflater.inflate(R.layout.fragment_play, container, false);
 
-
-        recordingList.setItemsCanFocus(true);
-        recordingList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selected=position;
-            }
-        });
-
-        recordingList.getSelectedItemPosition();
 
         seekBar=(SeekBar) view.findViewById(R.id.seekBar);
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                System.out.println("SEEKBAR PROGRESS: "+progress);
+                //System.out.println("SEEKBAR PROGRESS: "+progress);
             }
 
             @Override
@@ -89,25 +68,69 @@ public class PlayFragment extends Fragment {
             }
         });
         player=new Player(seekBar);
-        playButton=(Button) view.findViewById(R.id.play_button);
+
+        recordingList=(ListView) view.findViewById(R.id.recording_list);
+        load();
+        recordingList.setItemsCanFocus(true);
+        recordingList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                selected = position;
+            }
+        });
+
+        recordingList.getSelectedItemPosition();
+
+        playButton=(ImageButton) view.findViewById(R.id.play_button);
 
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                player.playStart(getFilePath()+recordingList.getItemAtPosition(selected));
+                if(player.isPlaying){
+                    player.stop();
+                }
+                player.playStart(getFilePath()+recordingList.getItemAtPosition(selected),0);
             }
         });
+        listener.getPlayFragment(this);
         return view;
     }
 
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            listener = (OnPlayInteractionListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnFragmentInteractionListener");
         }
     }
 
-    private String getFilePath(){
+    public void load(){
+        ArrayList<String> recList= new ArrayList<>();
+        File file= new File(getFilePath());
+        if(file.listFiles()!=null){
+            File[] list = file.listFiles();
+            for(File f:list){
+                recList.add(f.getName());
+            }
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(view.getContext(),android.R.layout.simple_list_item_1, android.R.id.text1,recList);
+            recordingList.setAdapter(adapter);
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        listener = null;
+    }
+
+    public interface OnPlayInteractionListener {
+        public void getPlayFragment(PlayFragment pf);
+    }
+
+    public String getFilePath(){
         GregorianCalendar cal= new GregorianCalendar();
         String filePath = "/sdcard/recapp/";
         filePath+=cal.get(GregorianCalendar.YEAR)+"/";
@@ -115,37 +138,4 @@ public class PlayFragment extends Fragment {
         filePath+=cal.get(GregorianCalendar.DATE)+"/";
         return filePath;
     }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
-    }
-
 }

@@ -82,6 +82,12 @@ public class Conversation {
         return cal.get(GregorianCalendar.MILLISECOND)+cal.get(GregorianCalendar.SECOND)*1000+cal.get(GregorianCalendar.MINUTE)*60000+cal.get(GregorianCalendar.HOUR)*3600000;
     }
 
+    //The number of milliseconds since the last day
+    private String currentName(){
+        cal=new GregorianCalendar();
+        return cal.get(GregorianCalendar.HOUR)+":"+cal.get(GregorianCalendar.MINUTE);
+    }
+
     //Generate the name of the file where the audio will be saved.
     private String getFilePath(){
         cal= new GregorianCalendar();
@@ -90,7 +96,7 @@ public class Conversation {
         filePath+=cal.get(GregorianCalendar.MONTH)+"/";
         filePath+=cal.get(GregorianCalendar.DATE)+"/";
         new File(filePath).mkdirs();
-        filePath+=currentTime()+".pcm";
+        filePath+=currentName()+".pcm";
         return filePath;
     }
 }

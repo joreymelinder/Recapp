@@ -113,10 +113,11 @@ public class Recorder {
             isRecording = false;
             recorder.stop();
             recorder.release();
-            recorder = new AudioRecord(MediaRecorder.AudioSource.MIC,SAMPLERATE, CHANNELS[0],ENCODING, BUFFER * BYTES);;
+            recorder = new AudioRecord(MediaRecorder.AudioSource.MIC,SAMPLERATE, CHANNELS[0],ENCODING, BUFFER * BYTES);
             recordingThread = null;
         }
         talk.save(BUFFER*BYTES);
+
         start();
     }
 }

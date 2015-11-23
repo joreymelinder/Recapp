@@ -1,34 +1,56 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" tools:context="com.jorey.recapp.RecordFragment">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.jorey.recapp.RecordFragment"
+    android:background="#000000">
 
-    <ImageView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/logo"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:minHeight="100dp"
-        android:background="#ff0000" />
+        android:layout_height="match_parent"
+        android:layout_gravity="right|top">
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Save"
-        android:id="@+id/save_button"
-        android:layout_below="@+id/logo"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="40dp"
-        android:layout_gravity="center" />
+        <com.criapp.circleprogresscustomview.CircleProgressView
+            android:id="@+id/vButton"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_gravity="right|bottom"
+            app:progressPeriodMills="10"
+            app:colorBaseFill="#000000"
+            app:strokeWidth="10"
+            app:colorBaseStroke="#000000"
+            app:colorWrong="#000000"
+            app:colorDone="#000000"
+            app:colorProgress="#FF0000"
+            app:colorWrongStroke="#FF0000"
 
-    <TextView android:text="recapp" android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="40dp"
-        android:layout_alignTop="@+id/logo"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/textView"
-        android:layout_gravity="center_horizontal|top" />
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true" />
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/logo"
+            android:minHeight="100dp"
+            android:src="@drawable/recapp_logo"
+            android:layout_above="@+id/vButton"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginBottom="50dp" />
+
+
+        <ImageView
+            android:layout_width="60dp"
+            android:layout_height="80dp"
+            android:id="@+id/imageView"
+            android:src="@drawable/abc_ic_voice_search_api_mtrl_alpha"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:clickable="false"
+            android:tint="#ff0000" />
+    </RelativeLayout>
+
+    <requestFocus />
 
 </FrameLayout>
