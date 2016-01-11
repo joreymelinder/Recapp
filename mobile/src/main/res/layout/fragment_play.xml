@@ -1,6 +1,10 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" tools:context="com.jorey.recapp.PlayFragment">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/play_fragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.jorey.recapp.PlayFragment"
+    android:background="#000000">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -12,11 +16,10 @@
             android:layout_width="wrap_content"
             android:layout_height="400dp"
             android:id="@+id/recording_list"
-            android:layout_gravity="center_horizontal|top"
             android:choiceMode="singleChoice"
             android:clickable="false"
             android:listSelector="@color/accent_material_dark_1"
-            android:layout_centerVertical="true"
+            android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" />
 
@@ -35,10 +38,10 @@
             android:layout_height="100dp"
             android:id="@+id/play_button"
             android:src="@drawable/ic_media_play"
-            android:background="@color/background_material_dark"
             android:scaleType="fitXY"
             android:layout_below="@+id/seekBar"
-            android:layout_centerHorizontal="true" />
+            android:layout_centerHorizontal="true"
+            android:background="#000000" />
 
         <DatePicker
             android:layout_width="wrap_content"
@@ -51,5 +54,4 @@
             android:calendarViewShown="false"/>
 
     </RelativeLayout>
-
 </FrameLayout>

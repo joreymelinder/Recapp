@@ -3,16 +3,19 @@ package com.jorey.recapp;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SeekBar;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 
@@ -22,10 +25,11 @@ public class PlayFragment extends Fragment {
     public ListView recordingList;
     public ImageButton playButton;
     public SeekBar seekBar;
+    public Button buttParty;
     public int selected=-1;
     public Player player;
-    private File file;
     private View view;
+    private int buttNum=-1;
 
     public static PlayFragment newInstance() {
         PlayFragment fragment = new PlayFragment();
@@ -35,9 +39,7 @@ public class PlayFragment extends Fragment {
         return fragment;
     }
 
-    public PlayFragment() {
-        // Required empty public constructor
-    }
+    public PlayFragment(){}
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,14 +49,16 @@ public class PlayFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
         view=inflater.inflate(R.layout.fragment_play, container, false);
-
+        player=new Player(this);
 
         seekBar=(SeekBar) view.findViewById(R.id.seekBar);
-
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                //System.out.println("SEEKBAR PROGRESS: "+progress);
+                if(fromUser){
+                    player.stop();
+                    player.playStart(player.file, progress);
+                }
             }
 
             @Override
@@ -64,10 +68,9 @@ public class PlayFragment extends Fragment {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
             }
         });
-        player=new Player(seekBar);
+
 
         recordingList=(ListView) view.findViewById(R.id.recording_list);
         load();
@@ -75,24 +78,41 @@ public class PlayFragment extends Fragment {
         recordingList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if((getFilePath() + recordingList.getItemAtPosition(position)).equals(player.file)){
+                    playButton.setImageResource(R.drawable.ic_media_play);
+                }
+                else{
+                    if(player.isPlaying) {
+                        playButton.setImageResource(R.drawable.ic_media_play);
+                    }
+                }
                 selected = position;
             }
         });
 
-        recordingList.getSelectedItemPosition();
-
-        playButton=(ImageButton) view.findViewById(R.id.play_button);
+        playButton = (ImageButton) view.findViewById(R.id.play_button);
 
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(player.isPlaying){
+                if (player.isPlaying) {
                     player.stop();
+                    if ((getFilePath() + recordingList.getItemAtPosition(selected)).equals(player.file)) {
+                        playButton.setImageResource(R.drawable.ic_media_play);
+                    } else {
+                        playButton.setImageResource(R.drawable.ic_media_pause);
+                        player.playStart(getFilePath() + recordingList.getItemAtPosition(selected), 0);
+                    }
+                } else {
+                    playButton.setImageResource(R.drawable.ic_media_pause);
+                    if ((getFilePath() + recordingList.getItemAtPosition(selected)).equals(player.file) && player.progress < 100) {
+                        player.playStart(getFilePath() + recordingList.getItemAtPosition(selected), player.progress);
+                    } else {
+                        player.playStart(getFilePath() + recordingList.getItemAtPosition(selected), 0);
+                    }
                 }
-                player.playStart(getFilePath()+recordingList.getItemAtPosition(selected),0);
             }
         });
-        listener.getPlayFragment(this);
         return view;
     }
 
@@ -101,9 +121,9 @@ public class PlayFragment extends Fragment {
         super.onAttach(activity);
         try {
             listener = (OnPlayInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
+        }
+        catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()+ " must implement OnFragmentInteractionListener");
         }
     }
 
@@ -127,9 +147,9 @@ public class PlayFragment extends Fragment {
     }
 
     public interface OnPlayInteractionListener {
-        public void getPlayFragment(PlayFragment pf);
     }
 
+    //TODO: the whole file management system needs to be less bad. right now it is very bad.
     public String getFilePath(){
         GregorianCalendar cal= new GregorianCalendar();
         String filePath = "/sdcard/recapp/";

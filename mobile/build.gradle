@@ -32,11 +32,14 @@ dependencies {
     compile 'com.google.android.gms:play-services-gcm:8.1.0'
 
     compile 'com.criapp.ui:circleprogressbutton:0.0.1'//Circle progress button
+
 }
 
 repositories {
     maven {
-
         url 'https://dl.bintray.com/galeen/maven/'
+
+        mavenLocal()
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
     }
 }

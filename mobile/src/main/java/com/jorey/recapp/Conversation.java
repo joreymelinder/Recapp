@@ -1,5 +1,7 @@
 package com.jorey.recapp;
 
+import android.util.Log;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -25,6 +27,7 @@ public class Conversation {
     public void speak(byte[] sound){
         //System.out.println("TIME: "+currentTime());
         //System.out.println(Arrays.toString(sound)+"\n");
+        Log.v("sound bytes",Arrays.toString(sound));
         data.add(sound);
         if(!full){
             if(timeElapsed()>limit){
@@ -41,12 +44,15 @@ public class Conversation {
         // Write the output audio in byte
 
         FileOutputStream os = null;
-        File file=new File(getFilePath());
+        String filename=getFilePath();
+        File file=new File(filename);
         try {
             file.createNewFile();
         }catch(Exception e){
             e.printStackTrace();
         }
+
+        Log.v("Conversation","create file: "+filename);
 
         try {
             os = new FileOutputStream(file);
@@ -54,6 +60,8 @@ public class Conversation {
             System.out.println("FILE ERROR");
             e.printStackTrace();
         }
+
+        Log.v("Conversation","write data: "+data.toString());
 
         for(byte[] b:data){
             try {
@@ -66,6 +74,7 @@ public class Conversation {
 
         try {
             os.close();
+            Log.v("Conversation","file closed");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -85,7 +94,7 @@ public class Conversation {
     //The number of milliseconds since the last day
     private String currentName(){
         cal=new GregorianCalendar();
-        return cal.get(GregorianCalendar.HOUR)+":"+cal.get(GregorianCalendar.MINUTE);
+        return cal.get(GregorianCalendar.HOUR)+":"+cal.get(GregorianCalendar.MINUTE)+":"+cal.get(GregorianCalendar.SECOND);
     }
 
     //Generate the name of the file where the audio will be saved.

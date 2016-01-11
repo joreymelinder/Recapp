@@ -1,7 +1,6 @@
 package com.jorey.recapp;
 
 import android.app.ActionBar;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -23,8 +22,7 @@ public class MainActivity extends FragmentActivity implements RecordFragment.OnR
         // Hide the status bar.
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
         decorView.setSystemUiVisibility(uiOptions);
-        // Remember that you should never show the action bar if the
-        // status bar is hidden, so hide that too if necessary.
+
         ActionBar actionBar = getActionBar();
         actionBar.hide();
         setContentView(R.layout.fragment_pager);
@@ -34,13 +32,9 @@ public class MainActivity extends FragmentActivity implements RecordFragment.OnR
     }
 
     @Override
-    public void getPlayFragment(PlayFragment pf) {
-        playFragment=pf;
-    }
-
-    @Override
     public void onRecord() {
-        playFragment.load();
+        //PlayFragment pf=(PlayFragment)getSupportFragmentManager().findFragmentById(R.id.play_fragment);
+        //pf.load();
     }
 
     public static class RecorderPager extends FragmentPagerAdapter {

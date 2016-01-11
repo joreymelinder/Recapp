@@ -13,6 +13,7 @@ import android.util.Log;
 
 public class RecordService extends Service {
     private static String LOG_TAG = "RecordService";
+
     private IBinder rBinder = new RecordBinder();
 
     private static final int SAMPLERATE = 44100;
@@ -33,10 +34,11 @@ public class RecordService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-
         Log.v(LOG_TAG, "in onCreate");
         startRecording();
     }
+
+
 
     @Override
     public IBinder onBind(Intent intent) {
