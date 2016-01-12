@@ -2,6 +2,13 @@ package com.jorey.recapp;
 
 import android.util.Log;
 
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.wearable.Asset;
+import com.google.android.gms.wearable.DataApi;
+import com.google.android.gms.wearable.PutDataMapRequest;
+import com.google.android.gms.wearable.PutDataRequest;
+import com.google.android.gms.wearable.Wearable;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -43,41 +50,24 @@ public class Conversation {
     public void save(int size) {
         // Write the output audio in byte
 
-        FileOutputStream os = null;
-        String filename=getFilePath();
-        File file=new File(filename);
-        try {
-            file.createNewFile();
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-
-        Log.v("Conversation","create file: "+filename);
-
-        try {
-            os = new FileOutputStream(file);
-        } catch (FileNotFoundException e) {
-            System.out.println("FILE ERROR");
-            e.printStackTrace();
-        }
-
         Log.v("Conversation","write data: "+data.toString());
-
+        byte[] recording=new byte[data.size()*2048];
+        int i=0;
         for(byte[] b:data){
-            try {
-                os.write(b, 0, size);
-            } catch (Exception e) {
-                e.printStackTrace();
+            for(byte a:b){
+                recording[i]=a;
+                i++;
             }
         }
 
 
-        try {
-            os.close();
-            Log.v("Conversation","file closed");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        //NOW I NEED TO SEND TO PHONE
+
+        Asset asset = Asset.createFromBytes(recording);
+        PutDataMapRequest dataMap = PutDataMapRequest.create("/txt");
+        dataMap.getDataMap().putAsset("com.example.company.key.TXT", asset);
+        PutDataRequest request = dataMap.asPutDataRequest();
+        PendingResult<DataApi.DataItemResult> pendingResult = Wearable.DataApi.putDataItem(mGoogleApiClient, request);
     }
 
     //The number of milliseconds since the recording first started

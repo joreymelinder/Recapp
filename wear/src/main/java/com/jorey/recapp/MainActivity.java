@@ -27,7 +27,7 @@ public class MainActivity extends WearableActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.v("main activity","created");
+        Log.v("main activity", "created");
         setContentView(R.layout.activity_main);
 
         setAmbientEnabled();
@@ -65,6 +65,15 @@ public class MainActivity extends WearableActivity {
     public void onExitAmbient() {
         updateDisplay();
         super.onExitAmbient();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        /*
+        Intent intent = new Intent(this,RecordService.class);
+        stopService(intent);
+        unbindService(mServiceConnection);*/
     }
 
     private void updateDisplay() {

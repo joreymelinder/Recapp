@@ -22,6 +22,17 @@ public class Conversation {
         startTime=currentTime();
     }
 
+    public Conversation(byte[] sound){
+        for(int i=0;i<sound.length/2048;i++)
+        {
+            byte[] moment=new byte[2048];
+            for(int j=0;j<2048;j++){
+                moment[j]=sound[2048*i+j];
+            }
+            data.add(moment);
+        }
+    }
+
 
     //Add a line of sound data.
     public void speak(byte[] sound){
@@ -65,6 +76,7 @@ public class Conversation {
 
         for(byte[] b:data){
             try {
+                Log.v("soundsize",""+b.length);
                 os.write(b, 0, size);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -79,6 +91,8 @@ public class Conversation {
             e.printStackTrace();
         }
     }
+
+
 
     //The number of milliseconds since the recording first started
     private int timeElapsed(){

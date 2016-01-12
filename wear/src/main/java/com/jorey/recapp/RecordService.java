@@ -11,6 +11,8 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
 
+import java.util.Arrays;
+
 public class RecordService extends Service {
     private static String LOG_TAG = "RecordService";
 
@@ -70,11 +72,13 @@ public class RecordService extends Service {
             public void run() {
                 while(!kill) {
                     Log.v(LOG_TAG, "startRecording");
+                    Log.v("watch","start Recording");
                     talk = new Conversation();
                     recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLERATE, CHANNELS[0], ENCODING, BUFFER * BYTES);
                     recorder.startRecording();
                     isRecording = true;
                     Log.v(LOG_TAG,"writeConversation");
+
                     while(isRecording) {
                         writeConversation();
                     }
@@ -103,17 +107,13 @@ public class RecordService extends Service {
     }
 
     private void writeConversation() {
+        Log.v("watch","write conversation");
         short sData[] = new short[BUFFER];
         try{
             recorder.read(sData, 0, BUFFER);
             byte bData[] = byteConversion(sData);
-
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
-
-                }
-            });
+            Log.v(LOG_TAG, Arrays.toString(bData));
+            System.out.println("audio data: " + Arrays.toString(bData));
             talk.speak(bData);
         }catch(Exception e){
             e.printStackTrace();
