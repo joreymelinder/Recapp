@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
+import android.widget.Toast;
 
 public class RecordService extends Service {
     private static String LOG_TAG = "RecordService";
@@ -33,50 +34,53 @@ public class RecordService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-
-        Log.v(LOG_TAG, "in onCreate");
         startRecording();
     }
 
     @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return Service.START_NOT_STICKY;
+    }
+
+    @Override
     public IBinder onBind(Intent intent) {
-        Log.v(LOG_TAG, "in onBind");
+        //Log.v(LOG_TAG, "in onBind");
 
         return rBinder;
     }
 
     @Override
     public void onRebind(Intent intent) {
-        Log.v(LOG_TAG, "in onRebind");
+        //Log.v(LOG_TAG, "in onRebind");
         super.onRebind(intent);
     }
 
     @Override
     public boolean onUnbind(Intent intent) {
-        Log.v(LOG_TAG, "in onUnbind");
+        //Log.v(LOG_TAG, "in onUnbind");
         return true;
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.v(LOG_TAG, "in onDestroy");
+        //Log.v(LOG_TAG, "in onDestroy");
     }
 
     private void startRecording() {
         new Thread(new Runnable() {
             public void run() {
                 while(!kill) {
-                    Log.v(LOG_TAG, "startRecording");
+                    //Log.v(LOG_TAG, "startRecording");
                     talk = new Conversation();
                     recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLERATE, CHANNELS[0], ENCODING, BUFFER * BYTES);
                     recorder.startRecording();
                     isRecording = true;
-                    Log.v(LOG_TAG,"writeConversation");
+                    //Log.v(LOG_TAG,"writeConversation");
                     while(isRecording) {
                         writeConversation();
                     }
-                    Log.v(LOG_TAG, "recording stopped");
+                    //Log.v(LOG_TAG, "recording stopped");
 
                     recorder.stop();
                     recorder.release();
@@ -105,13 +109,6 @@ public class RecordService extends Service {
         try{
             recorder.read(sData, 0, BUFFER);
             byte bData[] = byteConversion(sData);
-
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
-
-                }
-            });
             talk.speak(bData);
         }catch(Exception e){
             e.printStackTrace();
@@ -119,7 +116,7 @@ public class RecordService extends Service {
     }
 
     public void stopRecording() {
-        Log.v(LOG_TAG,"stopRecording");
+        //Log.v(LOG_TAG,"stopRecording");
         isRecording=false;
     }
 

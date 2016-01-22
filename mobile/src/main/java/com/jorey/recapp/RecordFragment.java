@@ -46,10 +46,10 @@ public class RecordFragment extends Fragment {
         View view =inflater.inflate(R.layout.fragment_record, container, false);
 
         //start recording
+
         Intent intent = new Intent(getContext(),RecordService.class);
         getContext().startService(intent);
         getContext().bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
-
         saveButton = (CircleProgressView) view.findViewById(R.id.vButton);
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,8 +91,9 @@ public class RecordFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        Intent intent = new Intent(getContext(),RecordService.class);
-        getContext().stopService(intent);
+        //Intent intent = new Intent(getContext(),RecordService.class);
+        //getContext().stopService(intent);
+        recordService.stopSelf();
         getContext().unbindService(mServiceConnection);
         listener = null;
     }

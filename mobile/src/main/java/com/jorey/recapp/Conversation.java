@@ -3,9 +3,12 @@ package com.jorey.recapp;
 import android.util.Log;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
@@ -17,7 +20,7 @@ public class Conversation {
     private int startTime,endTime;
     private boolean full=false;
     private int limit=300000;
-
+    public String tag = "Conversation";
     public Conversation(){
         startTime=currentTime();
     }
@@ -33,12 +36,20 @@ public class Conversation {
         }
     }
 
+    public Conversation(File file){
+        read(file);
+    }
+
+    public Conversation(InputStream is){
+        read(is);
+    }
+
 
     //Add a line of sound data.
     public void speak(byte[] sound){
         //System.out.println("TIME: "+currentTime());
         //System.out.println(Arrays.toString(sound)+"\n");
-        Log.v("sound bytes",Arrays.toString(sound));
+        //Log.v("sound bytes",Arrays.toString(sound));
         data.add(sound);
         if(!full){
             if(timeElapsed()>limit){
@@ -55,7 +66,7 @@ public class Conversation {
         // Write the output audio in byte
 
         FileOutputStream os = null;
-        String filename=getFilePath();
+        String filename=getFilePath()+currentName()+".pcm";
         File file=new File(filename);
         try {
             file.createNewFile();
@@ -68,15 +79,11 @@ public class Conversation {
         try {
             os = new FileOutputStream(file);
         } catch (FileNotFoundException e) {
-            System.out.println("FILE ERROR");
             e.printStackTrace();
         }
 
-        Log.v("Conversation","write data: "+data.toString());
-
         for(byte[] b:data){
             try {
-                Log.v("soundsize",""+b.length);
                 os.write(b, 0, size);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -88,6 +95,79 @@ public class Conversation {
             os.close();
             Log.v("Conversation","file closed");
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //Save audio to a file.
+    public void save(String name) {
+        // Write the output audio in byte
+
+        FileOutputStream os = null;
+        String filename=getFilePath()+name+".pcm";
+        File file=new File(filename);
+        try {
+            file.createNewFile();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+        Log.v("Conversation","create file: "+filename);
+
+        try {
+            os = new FileOutputStream(file);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        Log.v("Conversation", "write data: " + data.toString());
+
+        for(byte[] b:data){
+            try {
+                Log.v("soundsize",""+b.length);
+                os.write(b, 0, 2048);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        try {
+            os.close();
+            Log.v("Conversation","file closed");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void read(File file){
+        FileInputStream is=null;
+        try{
+            is=new FileInputStream(file);
+
+            int done=0;
+            while(done!=-1){
+                byte[] buffer=new byte[2048];
+                done=is.read(buffer,0,2048);
+                data.add(buffer);
+            }
+            is.close();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void read(InputStream is){
+        try{
+            int done=0;
+            while(done!=-1){
+                byte[] buffer=new byte[2048];
+                done=is.read(buffer,0,2048);
+                Log.v(tag,""+buffer);
+                data.add(buffer);
+            }
+            is.close();
+        }catch(Exception e){
             e.printStackTrace();
         }
     }
@@ -119,7 +199,6 @@ public class Conversation {
         filePath+=cal.get(GregorianCalendar.MONTH)+"/";
         filePath+=cal.get(GregorianCalendar.DATE)+"/";
         new File(filePath).mkdirs();
-        filePath+=currentName()+".pcm";
         return filePath;
     }
 }

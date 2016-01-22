@@ -12,6 +12,15 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.wearable.Asset;
+import com.google.android.gms.wearable.DataApi;
+import com.google.android.gms.wearable.PutDataMapRequest;
+import com.google.android.gms.wearable.PutDataRequest;
+import com.google.android.gms.wearable.Wearable;
+
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
@@ -23,6 +32,12 @@ public class MainActivity extends WearableActivity {
     private boolean bound=false;
     private WearableFrameLayout layout;
     private Button saveButton;
+    public GoogleApiClient mGoogleApiClient;
+
+    public Context context=this;
+
+    private String tag="Main Activity";
+    public Thread endThread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,17 +49,57 @@ public class MainActivity extends WearableActivity {
         layout = (WearableFrameLayout) findViewById(R.id.container);
 
         //start recording
+
+
         Intent intent = new Intent(this,RecordService.class);
         startService(intent);
         bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
+
+        //recordService.talk.context=this;
+        //recordService.context=this;
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+                    @Override
+                    public void onConnected(Bundle bundle) {
+                        Log.v(tag,"api client connected");
+                    }
+
+                    @Override
+                    public void onConnectionSuspended(int i) {
+                        Log.v(tag,"api client suspended");
+                    }
+                }).addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
+                    @Override
+                    public void onConnectionFailed(ConnectionResult connectionResult) {
+                        Log.v(tag,"api client failed");
+                    }
+                }).addApi(Wearable.API).build();
+
+
 
         saveButton=(Button) findViewById(R.id.save_button);
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(bound){
+                Log.v(tag, "clicked");
+
+                if (bound) {
                     recordService.stopRecording();
                 }
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            recordService.recordingThread.wait();
+                        }catch(Exception e){
+                            e.printStackTrace();
+                        }
+                        send();
+                        recordService.startRecording();
+                    }
+                }).start();
             }
         });
     }
@@ -62,19 +117,23 @@ public class MainActivity extends WearableActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mGoogleApiClient.disconnect();
+    }
+
+    @Override
     public void onExitAmbient() {
         updateDisplay();
         super.onExitAmbient();
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        /*
-        Intent intent = new Intent(this,RecordService.class);
-        stopService(intent);
-        unbindService(mServiceConnection);*/
-    }
 
     private void updateDisplay() {
         if (isAmbient()) {
@@ -83,6 +142,25 @@ public class MainActivity extends WearableActivity {
             layout.setBackground(null);
         }
     }
+
+    public void send(){
+        try {
+            Log.v(tag,"sending to phone");
+            byte[] recording = recordService.talk.getBytes();
+
+            Asset asset = Asset.createFromBytes(recording);
+            //Log.v(tag,"ass data: "+asset.getData().toString());
+            PutDataMapRequest dataMap = PutDataMapRequest.create("/recording");
+            dataMap.getDataMap().putAsset("recording", asset);
+            //dataMap.getDataMap().putByteArray("recording",recording);
+            PutDataRequest request = dataMap.asPutDataRequest();
+            PendingResult<DataApi.DataItemResult> pendingResult = Wearable.DataApi.putDataItem(mGoogleApiClient, request);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+
 
     private ServiceConnection mServiceConnection = new ServiceConnection() {
 
@@ -95,6 +173,7 @@ public class MainActivity extends WearableActivity {
         public void onServiceConnected(ComponentName name, IBinder service) {
             RecordService.RecordBinder myBinder = (RecordService.RecordBinder) service;
             recordService = myBinder.getService();
+            recordService.setContext(context);
             bound = true;
         }
     };

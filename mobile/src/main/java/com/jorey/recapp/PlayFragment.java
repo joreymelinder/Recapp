@@ -15,21 +15,21 @@ import android.widget.ListView;
 import android.widget.SeekBar;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 
-public class PlayFragment extends Fragment {
+public class PlayFragment extends Fragment implements RecordFragment.OnRecordInteractionListener{
     private OnPlayInteractionListener listener;
 
     public ListView recordingList;
     public ImageButton playButton;
     public SeekBar seekBar;
-    public Button buttParty;
+    public Button refreshButton;
     public int selected=-1;
     public Player player;
     private View view;
     private int buttNum=-1;
+    public String tag="Play Fragment";
 
     public static PlayFragment newInstance() {
         PlayFragment fragment = new PlayFragment();
@@ -75,14 +75,14 @@ public class PlayFragment extends Fragment {
         recordingList=(ListView) view.findViewById(R.id.recording_list);
         load();
         recordingList.setItemsCanFocus(true);
+
         recordingList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if((getFilePath() + recordingList.getItemAtPosition(position)).equals(player.file)){
+                if ((getFilePath() + recordingList.getItemAtPosition(position)).equals(player.file)) {
                     playButton.setImageResource(R.drawable.ic_media_play);
-                }
-                else{
-                    if(player.isPlaying) {
+                } else {
+                    if (player.isPlaying) {
                         playButton.setImageResource(R.drawable.ic_media_play);
                     }
                 }
@@ -111,6 +111,14 @@ public class PlayFragment extends Fragment {
                         player.playStart(getFilePath() + recordingList.getItemAtPosition(selected), 0);
                     }
                 }
+            }
+        });
+
+        refreshButton =(Button) view.findViewById(R.id.refresh_button);
+        refreshButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                load();
             }
         });
         return view;
@@ -144,6 +152,12 @@ public class PlayFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         listener = null;
+    }
+
+    @Override
+    public void onRecord() {
+        Log.v(tag,"recorded");
+        load();
     }
 
     public interface OnPlayInteractionListener {

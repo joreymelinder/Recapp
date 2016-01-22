@@ -1,7 +1,11 @@
 package com.jorey.recapp;
 
+import android.content.Context;
+import android.os.Bundle;
 import android.util.Log;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.wearable.Asset;
 import com.google.android.gms.wearable.DataApi;
@@ -10,13 +14,11 @@ import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Arrays;
+import java.io.FileInputStream;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Random;
 
 public class Conversation {
     private Queue<byte[]> data = new LinkedList<>();
@@ -24,17 +26,21 @@ public class Conversation {
     private int startTime,endTime;
     private boolean full=false;
     private int limit=300000;
+    public Context context;
+    private String tag = "Conversation";
 
     public Conversation(){
         startTime=currentTime();
     }
 
+    public Conversation(File file){
+        read(file);
+    }
+
 
     //Add a line of sound data.
     public void speak(byte[] sound){
-        //System.out.println("TIME: "+currentTime());
-        //System.out.println(Arrays.toString(sound)+"\n");
-        Log.v("sound bytes",Arrays.toString(sound));
+        //Log.v("sound bytes",Arrays.toString(sound));
         data.add(sound);
         if(!full){
             if(timeElapsed()>limit){
@@ -50,7 +56,44 @@ public class Conversation {
     public void save(int size) {
         // Write the output audio in byte
 
-        Log.v("Conversation","write data: "+data.toString());
+        Log.v(tag,"making file");
+        byte[] recording=getBytes();
+
+
+        //NOW I NEED TO SEND TO PHONE
+        Log.v(tag,"Sending file");
+        //setup data layer client
+        GoogleApiClient mGoogleApiClient = new GoogleApiClient.Builder(context)
+                .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+                    @Override
+                    public void onConnected(Bundle bundle) {
+
+                    }
+
+                    @Override
+                    public void onConnectionSuspended(int i) {
+
+                    }
+                }).addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
+                    @Override
+                    public void onConnectionFailed(ConnectionResult connectionResult) {
+
+                    }
+                }).addApi(Wearable.API).build();
+
+        Asset asset = Asset.createFromBytes(recording);
+        PutDataMapRequest dataMap = PutDataMapRequest.create("/txt");
+        dataMap.getDataMap().putAsset("com.example.company.key.TXT", asset);
+        PutDataRequest request = dataMap.asPutDataRequest();
+        PendingResult<DataApi.DataItemResult> pendingResult = Wearable.DataApi.putDataItem(mGoogleApiClient, request);
+
+    }
+
+    public byte[] getBytes(){
+        // Write the output audio in byte
+
+        Log.v(tag,"getBytes");
+
         byte[] recording=new byte[data.size()*2048];
         int i=0;
         for(byte[] b:data){
@@ -60,14 +103,26 @@ public class Conversation {
             }
         }
 
+        return recording;
+    }
 
-        //NOW I NEED TO SEND TO PHONE
+    public void read(File file){
+        Log.v(tag,"reading file");
+        FileInputStream is=null;
+        try{
+            is=new FileInputStream(file);
 
-        Asset asset = Asset.createFromBytes(recording);
-        PutDataMapRequest dataMap = PutDataMapRequest.create("/txt");
-        dataMap.getDataMap().putAsset("com.example.company.key.TXT", asset);
-        PutDataRequest request = dataMap.asPutDataRequest();
-        PendingResult<DataApi.DataItemResult> pendingResult = Wearable.DataApi.putDataItem(mGoogleApiClient, request);
+            int done=0;
+            while(done!=-1){
+                byte[] buffer=new byte[2048];
+                done=is.read(buffer,0,2048);
+                //Log.v(tag,""+buffer);
+                data.add(buffer);
+            }
+            is.close();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
     //The number of milliseconds since the recording first started
@@ -95,7 +150,6 @@ public class Conversation {
         filePath+=cal.get(GregorianCalendar.MONTH)+"/";
         filePath+=cal.get(GregorianCalendar.DATE)+"/";
         new File(filePath).mkdirs();
-        filePath+=currentName()+".pcm";
         return filePath;
     }
 }

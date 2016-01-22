@@ -53,5 +53,15 @@
             android:datePickerMode="spinner"
             android:calendarViewShown="false"/>
 
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="refresh"
+            android:id="@+id/refresh_button"
+            android:layout_below="@+id/play_button"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="38dp" />
+
     </RelativeLayout>
 </FrameLayout>
