@@ -44,8 +44,12 @@ public class Player{
         track.play();
 
         ByteBuffer buff=ByteBuffer.wrap(byteData);
-
-        buff.position((int) (position * byteData.length / 100.0));
+        Log.v("player","data percent: "+(double)byteData.length/100.0);
+        int percentPos = (int) (position * (double)byteData.length / 100.0);
+        int actualPos = percentPos-(percentPos%SAMPLERATE);
+        Log.v("player","percent pos: "+percentPos);
+        Log.v("player","actual pos: "+actualPos);
+        buff.position(actualPos);
         Log.d("Player","buffer position: "+buff.position());
 
         System.out.println("BUFFER TOTAL: "+buff.remaining());

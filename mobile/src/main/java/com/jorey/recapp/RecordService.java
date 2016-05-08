@@ -16,7 +16,7 @@ public class RecordService extends Service {
     private static String LOG_TAG = "RecordService";
     private IBinder rBinder = new RecordBinder();
 
-    private static final int SAMPLERATE = 44100;
+    public static final int SAMPLERATE = 44100;
     //                                             {recording channels,playback channels}
     private static final int[] CHANNELS = {AudioFormat.CHANNEL_IN_MONO,AudioFormat.CHANNEL_OUT_MONO};
     private static final int ENCODING = AudioFormat.ENCODING_PCM_16BIT;
@@ -108,6 +108,7 @@ public class RecordService extends Service {
         short sData[] = new short[BUFFER];
         try{
             recorder.read(sData, 0, BUFFER);
+
             byte bData[] = byteConversion(sData);
             talk.speak(bData);
         }catch(Exception e){
